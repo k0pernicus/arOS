@@ -1,9 +1,15 @@
+BIN=~/opt/bin
+LD=$(BIN)/x86_64-pc-elf-ld
+GBRESCURE=$(BIN)/grub-mkrescue
+
+ISO=arOS.iso
+
 default: build 
 
-build: arOS.iso
+build: $(ISO)
 
-run: arOS.iso
-	qemu-system-x86_64 -cdrom arOS.iso
+run: $(ISO)
+	qemu-system-x86_64 -cdrom $(ISO)
 
 multiboot_header.o: multiboot_header.asm
 	nasm -f elf64 multiboot_header.asm
@@ -12,13 +18,13 @@ boot.o:	boot.asm
 	nasm -f elf64 boot.asm
 
 kernel.bin: multiboot_header.o boot.o linker.ld
-	~/opt/bin/x86_64-pc-elf-ld -n -o kernel.bin -T linker.ld multiboot_header.o boot.o
+	$(LD) -n -o kernel.bin -T linker.ld multiboot_header.o boot.o
 
-arOS.iso: kernel.bin grub.cfg
+$(ISO): kernel.bin grub.cfg
 	mkdir -p isofiles/boot/grub
 	cp grub.cfg isofiles/boot/grub
 	cp kernel.bin isofiles/boot/
-	~/opt/bin/grub-mkrescue -o arOS.iso isofiles
+	$(GBRESCURE) -o $@ isofiles
 
 .PHONY: clean
 
@@ -27,4 +33,4 @@ clean:
 	rm -f boot.o
 	rm -f kernel.bin
 	rm -rf isofiles
-	rm -f arOS.iso
+	rm -f $(ISO)
