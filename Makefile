@@ -1,36 +1,39 @@
 BIN=~/opt/bin
 LD=$(BIN)/x86_64-pc-elf-ld
-GBRESCURE=$(BIN)/grub-mkrescue
+MKRESCUE=$(BIN)/grub-mkrescue
+NASM=nasm
+QEMU=qemu-system-x86_64
 
 ISO=arOS.iso
+KERNEL=kernel.bin
 
 default: build 
 
 build: $(ISO)
 
 run: $(ISO)
-	qemu-system-x86_64 -cdrom $(ISO)
+	$(QEMU) -cdrom $(ISO)
 
 multiboot_header.o: multiboot_header.asm
-	nasm -f elf64 multiboot_header.asm
+	$(NASM) -f elf64 multiboot_header.asm
 
 boot.o:	boot.asm
-	nasm -f elf64 boot.asm
+	$(NASM) -f elf64 boot.asm
 
-kernel.bin: multiboot_header.o boot.o linker.ld
-	$(LD) -n -o kernel.bin -T linker.ld multiboot_header.o boot.o
+$(KERNEL): multiboot_header.o boot.o linker.ld
+	$(LD) -n -o $@ -T linker.ld multiboot_header.o boot.o
 
-$(ISO): kernel.bin grub.cfg
+$(ISO): $(KERNEL) grub.cfg
 	mkdir -p isofiles/boot/grub
 	cp grub.cfg isofiles/boot/grub
-	cp kernel.bin isofiles/boot/
-	$(GBRESCURE) -o $@ isofiles
+	cp $< isofiles/boot/
+	$(MKRESCUE) -o $@ isofiles
 
 .PHONY: clean
 
 clean:
 	rm -f multiboot_header.o
 	rm -f boot.o
-	rm -f kernel.bin
+	rm -f $(KERNEL)
 	rm -rf isofiles
 	rm -f $(ISO)
