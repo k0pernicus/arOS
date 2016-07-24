@@ -1,5 +1,5 @@
 BIN=~/opt/bin
-BUILD=build
+TARGET=target
 ASM=src/asm
 
 LD=$(BIN)/x86_64-pc-elf-ld
@@ -22,10 +22,10 @@ SRC_GRUB=$(ASM)/$(GRUB)
 SRC_LINKER=$(ASM)/$(LINKER)
 SRC_MULTIBOOT=$(ASM)/$(MULTIBOOT_A)
 
-BUILD_MULTIBOOT=$(BUILD)/$(MULTIBOOT_O)
-BUILD_BOOT=$(BUILD)/$(BOOT_O)
-BUILD_ISO=$(BUILD)/$(ISO)
-BUILD_KERNEL=$(BUILD)/$(KERNEL)
+BUILD_MULTIBOOT=$(TARGET)/$(MULTIBOOT_O)
+BUILD_BOOT=$(TARGET)/$(BOOT_O)
+BUILD_ISO=$(TARGET)/$(ISO)
+BUILD_KERNEL=$(TARGET)/$(KERNEL)
 
 default: build 
 
@@ -35,11 +35,11 @@ run: $(BUILD_ISO)
 	$(QEMU) -cdrom $(BUILD_ISO)
 
 $(BUILD_MULTIBOOT): $(SRC_MULTIBOOT)
-	mkdir -p build/
+	mkdir -p $(TARGET)/
 	$(NASM) -f elf64 $< -o $@ 
 
 $(BUILD_BOOT): $(SRC_BOOT)
-	mkdir -p build/
+	mkdir -p $(TARGET)/
 	$(NASM) -f elf64 $< -o $@
 
 $(BUILD_KERNEL): $(BUILD_MULTIBOOT) $(BUILD_BOOT) $(SRC_LINKER) 
@@ -54,6 +54,6 @@ $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
 .PHONY: clean
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(TARGET)
 	rm -rf isofiles
 	rm -f $(ISO)
