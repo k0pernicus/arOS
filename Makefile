@@ -1,4 +1,6 @@
 BIN=~/opt/bin
+BUILD=build
+
 LD=$(BIN)/x86_64-pc-elf-ld
 MKRESCUE=$(BIN)/grub-mkrescue
 NASM=nasm
@@ -7,6 +9,17 @@ QEMU=qemu-system-x86_64
 ISO=arOS.iso
 KERNEL=kernel.bin
 
+BOOT_A=boot.asm
+BOOT_O=boot.o
+MULTIBOOT_A=multiboot_header.asm
+MULTIBOOT_O=multiboot_header.o
+
+BUILD_MULTIBOOT_A=$(BUILD)/$(MULTIBOOT_A)
+BUILD_MULTIBOOT_O=$(BUILD)/$(MULTIBOOT_O)
+BUILD_BOOT_A=$(BUILD)/$(BOOT_A)
+BUILD_BOOT_O=$(BUILD)/$(BOOT_O)
+BUILD_KERNEL=$(BUILD)/$(KERNEL)
+
 default: build 
 
 build: $(ISO)
@@ -14,16 +27,18 @@ build: $(ISO)
 run: $(ISO)
 	$(QEMU) -cdrom $(ISO)
 
-multiboot_header.o: multiboot_header.asm
-	$(NASM) -f elf64 multiboot_header.asm
+$(BUILD_MULTIBOOT_O): $(MULTIBOOT_A)
+	mkdir -p build/
+	$(NASM) -f elf64 $< -o $@ 
 
-boot.o:	boot.asm
-	$(NASM) -f elf64 boot.asm
+$(BUILD_BOOT_O): $(BOOT_A)
+	mkdir -p build/
+	$(NASM) -f elf64 $< -o $@
 
-$(KERNEL): multiboot_header.o boot.o linker.ld
-	$(LD) -n -o $@ -T linker.ld multiboot_header.o boot.o
+$(BUILD_KERNEL): $(BUILD_MULTIBOOT_O) $(BUILD_BOOT_O) linker.ld
+	$(LD) -n -o $@ -T linker.ld $(BUILD_MULTIBOOT_O) $(BUILD_BOOT_O)
 
-$(ISO): $(KERNEL) grub.cfg
+$(ISO): $(BUILD_KERNEL) grub.cfg
 	mkdir -p isofiles/boot/grub
 	cp grub.cfg isofiles/boot/grub
 	cp $< isofiles/boot/
@@ -32,8 +47,6 @@ $(ISO): $(KERNEL) grub.cfg
 .PHONY: clean
 
 clean:
-	rm -f multiboot_header.o
-	rm -f boot.o
-	rm -f $(KERNEL)
+	rm -rf $(BUILD)
 	rm -rf isofiles
 	rm -f $(ISO)
