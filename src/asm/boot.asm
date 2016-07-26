@@ -1,5 +1,8 @@
 global start
 
+; Rust code, extern to boot.asm
+extern kernel_main
+
 section .text ; Code in a new section
 bits 32 	  ; Specify the protected mode (32 bits)
 start:
@@ -62,6 +65,20 @@ start:
 	or eax, 1 << 31 ; Set bit 31
 	or eax, 1 << 16 ; Set bit 16
 	mov cr0, eax
+	
+	lgdt [gdt64.pointer] ; pass to the load gdt instruction the
+					 ; value of our pointer
+
+	;; ENABLE SEGMENT REGISTERS
+	; updating selectors
+	mov ax, gdt64.data ; sixteen-bit register ('e' in eax is for extended: 32 bits)
+	mov ss, ax ; stack segment register
+	mov ds, ax ; data segment register - points to the data segment of our GDT
+	mov es, ax ; extra segment register - needs to be set
+
+	jmp gdt64.code:kernel_main ; jump to kernel_main, call it to run Rust code
+
+	hlt
 
 section .bss ; bss = block started by symbol
 			 ; entries in this section are automatically
@@ -93,22 +110,3 @@ gdt64:
 .pointer:
 	dw .pointer - gdt64 - 1 ; calculate the length
 	dq gdt64 ; address of our table
-
-lgdt [gdt64.pointer] ; pass to the load gdt instruction the
-					 ; value of our pointer
-
-;; ENABLE SEGMENT REGISTERS
-; updating selectors
-mov ax, gdt64.data ; sixteen-bit register ('e' in eax is for extended: 32 bits)
-mov ss, ax ; stack segment register
-mov ds, ax ; data segment register - points to the data segment of our GDT
-mov es, ax ; extra segment register - needs to be set
-
-jmp gdt64.code:long_mode_start ; jump to the label long_mode_start
-
-section .text
-bits 64
-long_mode_start:
-	mov rax, 0x2f592f412f4b2f4f ; 'rax' is a 64-bit version of eax, which is a 32-bit version of ax
-	mov qword [0xb8000], rax ; qword is 64-bits/dword is 32 bits and word is 16 bits
-	hlt
