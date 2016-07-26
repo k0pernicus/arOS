@@ -1,0 +1,12 @@
+[package]
+name = "aros"
+version = "0.1.0"
+authors = ["k0pernicus <antonin.carette@gmail.com>"]
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+
+[profile.release]
+panic = "abort"
