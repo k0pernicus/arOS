@@ -1,6 +1,25 @@
 #![feature(lang_items)]
 #![no_std]
 
+static mut VGA: u64 = 0xb8000;
+static COLOUR: u64 = 0x02;
+
+macro_rules! k_println {
+    ($e:expr) => {
+        unsafe {
+            let mut offset : u64 = 0;
+            for c in $e.chars() {
+                *((VGA + offset) as *mut u64) = c as u64;
+                offset += 1;
+                *((VGA + offset) as *mut u64) = COLOUR;
+                offset += 1;
+            }
+            *((VGA + offset) as *mut u64) = 0x0A;
+            VGA = VGA + 160;
+        }
+    };
+}
+
 #[lang = "eh_personality"]
 extern fn eh_personality() {
 }
@@ -12,30 +31,11 @@ extern fn rust_begin_panic() -> ! {
 
 #[no_mangle]
 pub extern fn kernel_main() -> ! {
-    unsafe {
-        let vga = 0xb8000 as *mut u64;
+    // k_println!("Hello");
+    k_println!("arOS - another rust Operating System");
+    k_println!("system version 0.0.1");
+    k_println!("");
+    k_println!("Welcome user!");
 
-        *vga = 0x2f6c2f6c2f652f48;
-
-        let vga2 = 0xb8008 as *mut u64;
-        
-        *vga2 = 0x2f6f2f772f202f6f;
-
-        let vga3 = 0xb8010 as *mut u64;
-
-        *vga3 = 0x2f202f642f6c2f72;
-
-        let vga4 = 0xb8018 as *mut u64;
-
-        *vga4 = 0x2f6d2f6f2f722f66;
-
-        let vga5 = 0xb8020 as *mut u64;
-
-        *vga5 = 0x2f732f752f722f20;
-
-        let vga6 = 0xb8028 as *mut u64;
-
-        *vga6 = 0x2f212f74;
-    }
     loop {}
 }
