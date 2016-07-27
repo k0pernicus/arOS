@@ -2,7 +2,7 @@
 #![no_std]
 
 static mut VGA: u64 = 0xb8000;
-static COLOUR: u64 = 0x02;
+static COLOR: u64 = 0x02;
 
 macro_rules! k_println {
     ($e:expr) => {
@@ -11,7 +11,7 @@ macro_rules! k_println {
             for c in $e.chars() {
                 *((VGA + offset) as *mut u64) = c as u64;
                 offset += 1;
-                *((VGA + offset) as *mut u64) = COLOUR;
+                *((VGA + offset) as *mut u64) = COLOR;
                 offset += 1;
             }
             *((VGA + offset) as *mut u64) = 0x0A;
