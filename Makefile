@@ -50,7 +50,7 @@ $(BUILD_BOOT): $(SRC_BOOT)
 	mkdir -p $(TARGET)/
 	$(NASM) -f elf64 $< -o $@
 
-$(BUILD_KERNEL): $(BUILD_MULTIBOOT) $(BUILD_BOOT) $(SRC_LINKER) cargo
+$(BUILD_KERNEL): $(BUILD_MULTIBOOT) $(BUILD_BOOT) $(SRC_LINKER) xargo
 	$(LD) -n -o $@ -T $(SRC_LINKER) $(BUILD_MULTIBOOT) $(BUILD_BOOT) $(BUILD_LIBAROS)
 
 $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
@@ -59,10 +59,10 @@ $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
 	cp $< $(TARGET)/isofiles/boot/
 	$(MKRESCUE) -o $@ $(TARGET)/isofiles
 
-cargo: 
+xargo: 
 	xargo build --release --target $(AROS_CFIG)
 
 .PHONY: clean
 
 clean:
-	cargo clean
+	xargo clean
