@@ -1,0 +1,6 @@
+[package]
+name = "vga"
+version = "0.1.0"
+authors = ["Antonin Carette <antonin.carette@gmail.com>"]
+
+[dependencies]
