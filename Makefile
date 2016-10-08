@@ -59,16 +59,8 @@ $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
 	cp $< $(TARGET)/isofiles/boot/
 	$(MKRESCUE) -o $@ $(TARGET)/isofiles
 
-$(BUILD_LIBCORE):
-	git clone http://github.com/intermezzos/libcore $@
-	cd $@ && git reset --hard 02e41cd5b925a1c878961042ecfb00470c68296b
-
-$(BUILD_LIBCORE_STATIC): $(BUILD_LIBCORE)
-	cp $(AROS_JSON) $<
-	cd $< && cargo build --release --features disable_float --target=$(AROS_JSON)
-
-cargo: $(BUILD_LIBCORE_STATIC)
-	RUSTFLAGS="-L $(TARGET)/$(LIBCORE)/$(TARGET)/$(AROS_CFIG)/release" cargo build --release --target $(AROS_JSON)
+cargo: 
+	xargo build --release --target $(AROS_CFIG)
 
 .PHONY: clean
 
