@@ -1,3 +1,12 @@
+#![no_std]
+
+const COLUMNS: u8 = 20;
+const ROWS: u8 = 80;
+
+/// Alias type for console color code
+type ColorCode = u8;
+type Unicode = u8;
+
 /// Rust enumeration of colors.
 /// Each color is an hexadecimal value to represent a color for VGA display.
 /// 16 colors are available in this crate.
@@ -22,6 +31,36 @@ enum Color {
 
 /// Function to get the color code of the association of two colors.
 /// These two colors are foreground and background colors.
-fn get_colorcode_from(background_color: Color, foreground_color: Color) -> u8 {
-    ((background_color) as u8) << 4 + (foreground_color as u8)
+fn get_colorcode_from(background_color: Color, foreground_color: Color) -> ColorCode {
+    ((background_color) as ColorCode) << 4 + (foreground_color as ColorCode)
+}
+
+/// Structure to implement a console
+/// This console contains the color to display the text, associated to the background color code,
+/// and a buffer that contains the text which is displayed
+struct Console {
+    buffer: [Unicode; COLUMNS * ROWS],
+    color: ColorCode,
+    position: u16,
+}
+
+impl Console {
+    
+    fn new(console_color: ColorCode) -> Self {
+        Console {
+            buffer: [0; COLUMNS * ROWS],
+            color: console_color,
+            position: 0,
+        }
+    }
+
+    fn write_byte(&mut self, byte: u8) {
+        if (self.position + 2) >= (COLUMNS * ROWS) {
+            self.position = 0;
+        }
+        self.buffer[self.position] = byte;
+        self.buffer[self.position + 1] = self.color;
+        self.position += 2;
+    }
+
 }
