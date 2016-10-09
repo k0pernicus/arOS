@@ -1,7 +1,9 @@
 #![no_std]
 
-const COLUMNS: u8 = 20;
-const ROWS: u8 = 80;
+const COLUMNS: usize = 20;
+const ROWS: usize = 80;
+
+static mut VGA: u64 = 0xb8000;
 
 /// Alias type for console color code
 type ColorCode = u8;
@@ -10,7 +12,7 @@ type Unicode = u8;
 /// Rust enumeration of colors.
 /// Each color is an hexadecimal value to represent a color for VGA display.
 /// 16 colors are available in this crate.
-enum Color {
+pub enum Color {
     Black = 0x0,
     Blue = 0x1,
     Green = 0x2,
@@ -31,14 +33,30 @@ enum Color {
 
 /// Function to get the color code of the association of two colors.
 /// These two colors are foreground and background colors.
-fn get_colorcode_from(background_color: Color, foreground_color: Color) -> ColorCode {
+pub fn get_colorcode_from(background_color: Color, foreground_color: Color) -> ColorCode {
     ((background_color) as ColorCode) << 4 + (foreground_color as ColorCode)
 }
+
+// macro_rules! println {
+//     ($e:expr) => {
+//         unsafe {
+//             let mut offset : u64 = 0;
+//             for c in $e.chars() {
+//                 *((VGA + offset) as *mut u64) = c as u64;
+//                 offset += 1;
+//                 *((VGA + offset) as *mut u64) = COLOR;
+//                 offset += 1;
+//             }
+//             *((VGA + offset) as *mut u64) = 0x0A;
+//             VGA = VGA + 160;
+//         }
+//     };
+// }
 
 /// Structure to implement a console
 /// This console contains the color to display the text, associated to the background color code,
 /// and a buffer that contains the text which is displayed
-struct Console {
+pub struct Console {
     buffer: [Unicode; COLUMNS * ROWS],
     color: ColorCode,
     position: u16,
@@ -46,7 +64,7 @@ struct Console {
 
 impl Console {
     
-    fn new(console_color: ColorCode) -> Self {
+    pub fn new(console_color: ColorCode) -> Self {
         Console {
             buffer: [0; COLUMNS * ROWS],
             color: console_color,
@@ -54,12 +72,12 @@ impl Console {
         }
     }
 
-    fn write_byte(&mut self, byte: u8) {
-        if (self.position + 2) >= (COLUMNS * ROWS) {
+    pub fn write_byte(&mut self, byte: u8) {
+        if (self.position + 2) as usize >= (COLUMNS * ROWS) {
             self.position = 0;
         }
-        self.buffer[self.position] = byte;
-        self.buffer[self.position + 1] = self.color;
+        self.buffer[self.position as usize] = byte;
+        self.buffer[(self.position + 1) as usize] = self.color;
         self.position += 2;
     }
 
