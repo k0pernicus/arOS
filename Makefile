@@ -1,10 +1,9 @@
 ASM=src/asm
-BIN=~/opt/bin
 LIBCORE=libcore
 TARGET=target
 
-LD=$(BIN)/x86_64-pc-elf-ld
-MKRESCUE=$(BIN)/grub-mkrescue
+LD=ld
+MKRESCUE=grub-mkrescue
 NASM=nasm
 QEMU=qemu-system-x86_64
 
