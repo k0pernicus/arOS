@@ -2,7 +2,7 @@ ASM=src/asm
 LIBCORE=libcore
 TARGET=target
 
-LD=ld
+LD="x86_64-pc-elf-ld"
 MKRESCUE=grub-mkrescue
 NASM=nasm
 QEMU=qemu-system-x86_64
