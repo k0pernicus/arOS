@@ -59,16 +59,16 @@ fi
 # gcc
 cd $HOME/src
 
-if [ ! -d "gcc-5.3.0" ]; then
+if [ ! -d "gcc-7.3.0" ]; then
   echo ""
   echo "Installing \`gcc\`"
   echo ""
-  curl -L http://ftpmirror.gnu.org/gcc/gcc-5.3.0/gcc-5.3.0.tar.bz2 > gcc-5.3.0.tar.bz2
-  tar jxf gcc-5.3.0.tar.bz2
-  rm gcc-5.3.0.tar.bz2
+  curl -L http://ftpmirror.gnu.org/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz > gcc-7.3.0.tar.gz
+  tar xvzf gcc-7.3.0.tar.gz
+  rm gcc-7.3.0.tar.gz
   mkdir -p build-gcc
   cd build-gcc
-  ../gcc-5.3.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers --with-gmp=/usr/local/Cellar/gmp/6.1.0 --with-mpfr=/usr/local/Cellar/mpfr/3.1.3 --with-mpc=/usr/local/Cellar/libmpc/1.0.3
+  ../gcc-7.3.0/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers --with-gmp=/usr/local/Cellar/gmp/6.1.0 --with-mpfr=/usr/local/Cellar/mpfr/3.1.3 --with-mpc=/usr/local/Cellar/libmpc/1.0.3
   make all-gcc
   make all-target-libgcc
   make install-gcc
