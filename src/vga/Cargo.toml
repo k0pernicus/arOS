@@ -3,4 +3,12 @@ name = "vga"
 version = "0.1.0"
 authors = ["k0pernicus <antonin.carette@gmail.com>"]
 
+[lib]
+crate-type = ["rlib"]
+
 [dependencies]
+volatile = "0.1.0"
+rlibc = "0.1"
+
+[profile.release]
+panic = "abort"

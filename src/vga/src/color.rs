@@ -27,7 +27,7 @@ impl ColorCode {
 }
 
 impl Default for ColorCode {
-    fn default() -> Self {
+    fn default() -> ColorCode {
         ColorCode::new(Color::Black, Color::Green)
     }
 }

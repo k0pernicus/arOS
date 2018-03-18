@@ -13,7 +13,6 @@ ISO=arOS.iso
 KERNEL=kernel.bin
 
 AROS_CFIG=x86_64-unknown-aros-gnu
-AROS_JSON=$(AROS_CFIG).json
 BOOT_A=boot.asm
 BOOT_O=boot.o
 GRUB=grub.cfg
@@ -59,7 +58,7 @@ $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
 	$(MKRESCUE) -o $@ $(TARGET)/isofiles
 
 xargo: 
-	xargo build --release --target $(AROS_CFIG)
+	RUST_TARGET_PATH = $(shell pwd); xargo build --release --target $(AROS_CFIG)
 
 .PHONY: clean
 
