@@ -7,6 +7,7 @@ authors = ["k0pernicus <antonin.carette@gmail.com>"]
 crate-type = ["staticlib"]
 
 [dependencies]
+vga = { path = "src/vga" }
 
 [profile.release]
 panic = "abort"
