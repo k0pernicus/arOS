@@ -58,7 +58,7 @@ $(BUILD_ISO): $(BUILD_KERNEL) $(SRC_GRUB)
 	$(MKRESCUE) -o $@ $(TARGET)/isofiles
 
 xargo: 
-	RUST_TARGET_PATH = $(shell pwd); xargo build --release --target $(AROS_CFIG)
+	xargo build --release --target $(AROS_CFIG)
 
 .PHONY: clean
 
