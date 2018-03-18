@@ -7,6 +7,7 @@ authors = ["k0pernicus <antonin.carette@gmail.com>"]
 crate-type = ["staticlib"]
 
 [dependencies]
+rlibc = "0.1"
 vga = { path = "src/vga" }
 
 [profile.release]

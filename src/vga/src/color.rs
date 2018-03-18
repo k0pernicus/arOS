@@ -28,6 +28,6 @@ impl ColorCode {
 
 impl Default for ColorCode {
     fn default() -> ColorCode {
-        ColorCode::new(Color::Black, Color::Green)
+        ColorCode::new(Color::Green, Color::Black)
     }
 }
